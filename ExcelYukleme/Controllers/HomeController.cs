@@ -50,7 +50,6 @@ namespace ExcelYukleme.Controllers
                         var rowCount = 0;
                         for (int row = 1; row <= worksheet.Dimension.Rows; row++)
                         {
-                            // Hücre doluysa lastNonEmptyColumn'u güncelle
                             if (!string.IsNullOrWhiteSpace(worksheet.Cells[row, 2].Text))
                             {
                                 rowCount = row;
@@ -58,7 +57,6 @@ namespace ExcelYukleme.Controllers
                         }
                         for (int col = 1; col <= worksheet.Dimension.Columns; col++)
                         {
-                            // Hücre doluysa lastNonEmptyColumn'u güncelle
                             if (!string.IsNullOrWhiteSpace(worksheet.Cells[1, col].Text))
                             {
                                 columnCount = col;
@@ -169,7 +167,6 @@ namespace ExcelYukleme.Controllers
                 }
             }
             var fileContent = await Indir(list);
-            // Dosyayý indirme olarak döndür
             var fileName = "EBSISPersonel.xlsx";
             var contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
             var cd = new System.Net.Mime.ContentDisposition
@@ -209,7 +206,7 @@ namespace ExcelYukleme.Controllers
                     }
                 }
                 workbook.Save();
-                return workbook.GetAsByteArray(); // Byte dizisi olarak al 
+                return workbook.GetAsByteArray(); 
             }
 
         }
@@ -247,7 +244,6 @@ namespace ExcelYukleme.Controllers
                         var rowCount = 0;
                         for (int row = 1; row <= worksheet.Dimension.Rows; row++)
                         {
-                            // Hücre doluysa lastNonEmptyColumn'u güncelle
                             if (!string.IsNullOrWhiteSpace(worksheet.Cells[row, 2].Text))
                             {
                                 rowCount = row;
@@ -255,7 +251,6 @@ namespace ExcelYukleme.Controllers
                         }
                         for (int col = 1; col <= worksheet.Dimension.Columns; col++)
                         {
-                            // Hücre doluysa lastNonEmptyColumn'u güncelle
                             if (!string.IsNullOrWhiteSpace(worksheet.Cells[1, col].Text))
                             {
                                 columnCount = col;
@@ -311,7 +306,6 @@ namespace ExcelYukleme.Controllers
             int distance = LevenshteinDistance(source, target);
             int maxLength = Math.Max(source.Length, target.Length);
 
-            // Eðer iki string tamamen aynýysa, similarity %100 olacaktýr.
             return 1.0 - (double)distance / maxLength;
         }
 
