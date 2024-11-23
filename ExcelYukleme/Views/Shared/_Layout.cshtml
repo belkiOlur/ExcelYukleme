@@ -1,0 +1,185 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ExcelYukleme</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/ExcelYukleme.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">ExcelYukleme</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item text-dark">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="ExcelIndir">Excel İndir</a>
+                        </li>
+                        <li class="nav-item text-dark">
+                            <a data-bs-toggle="modal" data-bs-target="#staticBackdropExcelIlceId" class="nav-link text-dark">İlçe Id Doldur</a>
+                        </li>
+                        <li class="nav-item text-dark">
+                            <a data-bs-toggle="modal" data-bs-target="#staticBackdropExcel" class="nav-link text-dark">Personeli Excelden Güncelle</a>
+                        </li>
+                       
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+            <div id="fullscreenGifff" style="display: none;">
+                <img src="~/images/excelFind.gif" alt="Playing GIF">
+                <div id="loadingText2"><h1>Aylık Vardiya Sisteme İşleniyor</h1></div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2024 - ExcelYukleme - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+    
+    @*Modal Personel Güncelle*@
+    <div class="modal fade" id="staticBackdropExcel" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropExcelLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Personel Güncelleme Modülü</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div asp-validation-summary="ModelOnly"></div>
+                    <form asp-area="" asp-controller="Home" asp-action="ExcelYukle" method="post" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label class="col-form-label">Excel Dosya Yolu Seçiniz:</label>
+                            <input type="file" class="form-control" id="uploadedFile" name="uploadedFile" required>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Vazgeçtim</button>
+                            <button id="playButtonnn" type="submit" class="btn btn-success d-md-block" disabled>Ekle</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    @*Modal İlçe Id Doldur*@
+    <div class="modal fade" id="staticBackdropExcelIlceId" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropExcelIlceIdLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Ilçe Id Düzenleme Modülü</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div asp-validation-summary="ModelOnly"></div>
+                    <form asp-area="" asp-controller="Home" asp-action="IlceIdIsleme" method="post" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label class="col-form-label">Excel Dosya Yolu Seçiniz:</label>
+                            <input type="file" class="form-control" id="uploadedFilee" name="uploadedFilee" required>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Vazgeçtim</button>
+                            <button id="playButtonnnn" type="submit" class="btn btn-success d-md-block" data-bs-dismiss="modal" disabled>Ekle</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const playButton = document.getElementById('playButton');
+            const playButtonn = document.getElementById('playButtonn');
+            const playButtonnn = document.getElementById('playButtonnn');
+            const playButtonnn = document.getElementById('playButtonnnn');
+            const fullscreenGif = document.getElementById('fullscreenGif');
+            const fullscreenGiff = document.getElementById('fullscreenGiff');
+            const fullscreenGifff = document.getElementById('fullscreenGifff');
+            const loadingText = document.getElementById('loadingText');
+            const loadingText1 = document.getElementById('loadingText1');
+            const loadingText2 = document.getElementById('loadingText2');
+            let isVisible = true;
+            let blinkInterval;
+
+            playButton.addEventListener('click', function () {
+                fullscreenGif.style.display = 'flex';
+
+                blinkInterval = setInterval(function () {
+                    if (isVisible) {
+                        loadingText.style.opacity = '0';
+                    } else {
+                        loadingText.style.opacity = '1';
+                    }
+                    isVisible = !isVisible;
+                }, 500);
+            });
+            playButtonn.addEventListener('click', function () {
+                fullscreenGiff.style.display = 'flex';
+
+                blinkInterval = setInterval(function () {
+                    if (isVisible) {
+                        loadingText1.style.opacity = '0';
+                    } else {
+                        loadingText1.style.opacity = '1';
+                    }
+                    isVisible = !isVisible;
+                }, 500);
+            });
+            playButtonnn.addEventListener('click', function () {
+                fullscreenGifff.style.display = 'flex';
+
+                blinkInterval = setInterval(function () {
+                    if (isVisible) {
+                        loadingText2.style.opacity = '0';
+                    } else {
+                        loadingText2.style.opacity = '1';
+                    }
+                    isVisible = !isVisible;
+                }, 500);
+            });
+            playButtonnnn.addEventListener('click', function () {
+                fullscreenGifff.style.display = 'flex';
+
+                blinkInterval = setInterval(function () {
+                    if (isVisible) {
+                        loadingText2.style.opacity = '0';
+                    } else {
+                        loadingText2.style.opacity = '1';
+                    }
+                    isVisible = !isVisible;
+                }, 500);
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const fileInput = document.getElementById('uploadedFile');
+            const submitButton = document.getElementById('playButtonnn');
+            const fileInputt = document.getElementById('uploadedFilee');
+            const submitButtonn = document.getElementById('playButtonnnn');
+            fileInput.addEventListener('change', function () {
+                submitButton.disabled = !fileInput.files.length;
+            });
+            fileInputt.addEventListener('change', function () {
+                submitButtonn.disabled = !fileInputt.files.length;
+            });
+        });
+    </script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
