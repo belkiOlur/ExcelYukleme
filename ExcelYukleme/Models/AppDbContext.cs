@@ -9,6 +9,7 @@ namespace ExcelYukleme.Models
        
         public DbSet<PersonelModel> Personeller { get; set; }
         public DbSet<KodIlcelerModel> KodIlceler { get; set; }
+        public DbSet<PersonelRolleriModel>PersonelRolleri { get; set; }
     }
 
 }

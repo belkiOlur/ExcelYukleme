@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
+using static OfficeOpenXml.ExcelErrorValue;
 
 namespace ExcelYukleme.Controllers
 {
@@ -24,12 +25,6 @@ namespace ExcelYukleme.Controllers
         public IActionResult Index()
         {
             return View();
-        }
-        public async Task<IActionResult> AdresdenIlceIdOlustur(IFormFile uploadedFilee)
-        {
-            await IlceIdIsleme(uploadedFilee);
-
-            return RedirectToAction("Index");
         }
         public async Task<ActionResult> IlceIdIsleme(IFormFile uploadedFilee)
         {
@@ -223,7 +218,7 @@ namespace ExcelYukleme.Controllers
             {
                 TempData["Error"] = bilgi;
             }
-            if (bilgi.Contains("Mevcut."))
+            if (bilgi.Contains("Eklenemedi."))
             {
                 TempData["KismiHata"] = bilgi;
             }
@@ -232,7 +227,6 @@ namespace ExcelYukleme.Controllers
         private string ExceliDatabaseIsleme(IFormFile uploadedFile)
         {
             string bilgi = "";
-            int excelRow = 0;
             if (uploadedFile != null && uploadedFile.Length > 0)
             {
                 using (var stream = new MemoryStream())
@@ -289,10 +283,11 @@ namespace ExcelYukleme.Controllers
                                         {
                                             model.DogumTarihi = new DateTime(1970, 1, 1);
                                         }
+                                        bilgi = "Tüm Personel Barýyla Güncellendi. <br/>";
                                     }
                                     catch
                                     {
-                                        bilgi = $"{row}. Satýrdaki {model.Sicil} Sicilli Personle Ait Veri Hatalý.<br/> {row - 1} Satýra Kadar Güncelleme Baþarýlý,";
+                                        bilgi = $"{row}. Satýrdaki {model.Sicil} Sicilli Personle Ait Veri Hatalý.<br/> {row - 1} Satýra Kadar Güncelleme Baþarýlý.";
                                         return bilgi;
                                     }
                                     _context.Personeller.Update(model);
@@ -300,57 +295,72 @@ namespace ExcelYukleme.Controllers
                                 }
                                 else
                                 {
+                                    PersonelModel personel = new();
                                     try
                                     {
-                                        model.Id=Guid.NewGuid();
-                                        model.Sicil = worksheet.Cells[row, 2].Text;
-                                        model.Ad = worksheet.Cells[row, 3].Text;
-                                        model.Soyad= worksheet.Cells[row,4].Text;
-                                        model.Sifre = "B61FEF74D1E1C848DD109B93DAE4C9CEB7CB5E362F24CF4D1AAA50DD30D1305F";
-                                        model.RutbeId = Convert.ToInt32(worksheet.Cells[row, 6].Text);
-                                        model.BirimId = Convert.ToInt32(worksheet.Cells[row, 7].Text);
-                                        model.CinsiyetId = Convert.ToInt32(worksheet.Cells[row, 8].Text);
-                                        model.TcNo= worksheet.Cells[row, 9].Text;
-                                        model.IbanNo= worksheet.Cells[row, 10].Text;
-                                        model.KanGrubuId = Convert.ToInt32(worksheet.Cells[row, 11].Text);
-                                        model.HataliGirisSayisi = Convert.ToInt32(worksheet.Cells[row, 12].Text);
-                                        model.FotoIsim= worksheet.Cells[row, 13].Text;
-                                        model.TelsizKodu= worksheet.Cells[row, 14].Text;
-                                        model.MedeniDurumId = Convert.ToInt32(worksheet.Cells[row, 15].Text);
-                                        model.Mail = worksheet.Cells[row, 16].Text;
-                                        model.CepTelefonu = worksheet.Cells[row, 17].Text;
-                                        model.SilahMarka = worksheet.Cells[row, 18].Text;
-                                        model.SilahSeriNo = worksheet.Cells[row, 19].Text;
-                                        model.EsSicil = worksheet.Cells[row, 20].Text;
-                                        model.KayitTarihi = DateTime.Now;
-                                        model.IptalMi = false;
-                                        model.Adres = worksheet.Cells[row, 23].Text;
+
+                                        personel.Id = Guid.NewGuid();
+                                        personel.Sicil = worksheet.Cells[row, 2].Text;
+                                        personel.Ad = worksheet.Cells[row, 3].Text;
+                                        personel.Soyad = worksheet.Cells[row, 4].Text;
+                                        personel.Sifre = "B61FEF74D1E1C848DD109B93DAE4C9CEB7CB5E362F24CF4D1AAA50DD30D1305F";
+                                        personel.RutbeId = Convert.ToInt32(worksheet.Cells[row, 6].Text);
+                                        personel.BirimId = Convert.ToInt32(worksheet.Cells[row, 7].Text);
+                                        personel.CinsiyetId = Convert.ToInt32(worksheet.Cells[row, 8].Text);
+                                        personel.TcNo = worksheet.Cells[row, 9].Value?.ToString()!.Trim()!;
+                                        personel.IbanNo = worksheet.Cells[row, 10].Text;
+                                        personel.KanGrubuId = Convert.ToInt32(worksheet.Cells[row, 11].Text);
+                                        personel.HataliGirisSayisi = Convert.ToInt32(worksheet.Cells[row, 12].Text);
+                                        personel.FotoIsim = worksheet.Cells[row, 13].Text;
+                                        personel.TelsizKodu = worksheet.Cells[row, 14].Text;
+                                        personel.MedeniDurumId = Convert.ToInt32(worksheet.Cells[row, 15].Text);
+                                        personel.Mail = worksheet.Cells[row, 16].Text;
+                                        personel.CepTelefonu = worksheet.Cells[row, 17].Text;
+                                        personel.SilahMarka = worksheet.Cells[row, 18].Text;
+                                        personel.SilahSeriNo = worksheet.Cells[row, 19].Text;
+                                        personel.EsSicil = worksheet.Cells[row, 20].Text;
+                                        personel.KayitTarihi = DateTime.Now;
+                                        personel.IptalMi = false;
+                                        personel.Adres = worksheet.Cells[row, 23].Text;
                                         string excelIlce = worksheet.Cells[row, 24].Text;
                                         if (excelIlce == null || excelIlce == "")
                                         {
-                                            model.IlceId = 0;
+                                            personel.IlceId = 0;
                                         }
                                         else
                                         {
-                                            model.IlceId = Convert.ToInt32(worksheet.Cells[row, 24].Text);
+                                            personel.IlceId = Convert.ToInt32(worksheet.Cells[row, 24].Text);
                                         }
-                                        model.IstihkakDurumu = Convert.ToInt32(worksheet.Cells[row, 25].Text);
+                                        personel.IstihkakDurumu = Convert.ToInt32(worksheet.Cells[row, 25].Text);
                                         string dogumTarihi = worksheet.Cells[row, 26].Text;
                                         string[] dateParts = dogumTarihi.Split('-', '.', '/');
                                         if (dateParts.Length >= 3)
                                         {
-                                            model.DogumTarihi = Convert.ToDateTime(worksheet.Cells[row, 26].Text);
+                                            personel.DogumTarihi = Convert.ToDateTime(worksheet.Cells[row, 26].Text);
                                         }
                                         else
                                         {
-                                            model.DogumTarihi = new DateTime(1970, 1, 1);
+                                            personel.DogumTarihi = new DateTime(1970, 1, 1);
                                         }
-                                        ////////Personel Rolleri ekle
+                                        _context.Personeller.Add(personel);
+                                        _context.SaveChanges();
 
+                                        PersonelRolleriModel rol = new();
+                                        List<int> roller = new List<int> { 35, 6 };
+                                        foreach (int i in roller)
+                                        {
+                                            rol.Id = Guid.NewGuid();
+                                            rol.PersonelId = personel.Id;
+                                            rol.IptalMi = false;
+                                            rol.RolId = i;
+                                            _context.PersonelRolleri.Add(rol);
+                                            _context.SaveChanges();
+                                        }
+                                        bilgi += $"{personel.Sicil} Sicilli Personel Sisteme Eklendi. <br/>";
                                     }
                                     catch
                                     {
-
+                                        bilgi += $"{personel.Sicil} Sicilli Personel Sisteme Eklenemedi. <br/>";
                                     }
                                 }
                             }
