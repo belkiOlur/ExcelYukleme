@@ -287,7 +287,7 @@ namespace ExcelYukleme.Controllers
                                     }
                                     catch
                                     {
-                                        bilgi = $"{row}. Satýrdaki {model.Sicil} Sicilli Personle Ait Veri Hatalý.<br/> {row - 1} Satýra Kadar Güncelleme Baþarýlý.";
+                                        bilgi = $"{row}. Satýrdaki {model.Sicil} Sicilli Personle Ait Veri Hatalý.<br/> {row - 1} Satýra Kadar Güncelleme ve Ekleme Baþarýlý.";
                                         return bilgi;
                                     }
                                     _context.Personeller.Update(model);
@@ -360,7 +360,8 @@ namespace ExcelYukleme.Controllers
                                     }
                                     catch
                                     {
-                                        bilgi += $"{personel.Sicil} Sicilli Personel Sisteme Eklenemedi. <br/>";
+                                        bilgi = $"{personel.Sicil} Sicilli Personel Sisteme Eklenemedi. <br/> {row - 1} Satýra Kadar Güncelleme ve Ekleme Baþarýlý";
+                                        return bilgi;
                                     }
                                 }
                             }
