@@ -1,4 +1,5 @@
-using ExcelYukleme.Models;
+using ExcelYukleme.Extensions;
+using ExcelYukleme.Repository.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using OfficeOpenXml;
@@ -21,7 +22,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         );
     });
 }, ServiceLifetime.Scoped);
-
+builder.Services.AddServiceCollection();
 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 builder.Services.AddSingleton<IFileProvider>(new PhysicalFileProvider(Directory.GetCurrentDirectory()));
 

@@ -1,4 +1,4 @@
-﻿namespace ExcelYukleme.Models
+﻿namespace ExcelYukleme.Repository.Models
 {
     public class PersonelModel
     {

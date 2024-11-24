@@ -1,7 +1,6 @@
-﻿using ExcelYukleme.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
-namespace ExcelYukleme.Models
+namespace ExcelYukleme.Repository.Models
 {
     public class AppDbContext :DbContext
     {
