@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using Microsoft.IdentityModel.Abstractions;
 using OfficeOpenXml;
 using System.Diagnostics;
 using System.Globalization;
@@ -206,7 +207,7 @@ namespace ExcelYukleme.Controllers
                     }
                 }
                 workbook.Save();
-                return workbook.GetAsByteArray(); 
+                return workbook.GetAsByteArray();
             }
 
         }
@@ -260,39 +261,99 @@ namespace ExcelYukleme.Controllers
                         for (int row = 2; row <= rowCount; row++)
                         {
                             string sicil = worksheet.Cells[row, 2].Text;
-                            model = _context.Personeller.AsNoTracking().Where(x => x.Sicil == sicil).FirstOrDefault()!;
-
-                            try
+                            if (sicil != null && sicil != "")
                             {
-                                model.Adres = worksheet.Cells[row, 23].Text;
-                                string excelIlce = worksheet.Cells[row, 24].Text;
-                                if(excelIlce == null || excelIlce == "")
+                                model = _context.Personeller.AsNoTracking().Where(x => x.Sicil == sicil).FirstOrDefault()!;
+                                if (model != null)
+                                {
+                                    try
+                                    {
+                                        model.Adres = worksheet.Cells[row, 23].Text;
+                                        string excelIlce = worksheet.Cells[row, 24].Text;
+                                        if (excelIlce == null || excelIlce == "")
                                         {
-                                    model.IlceId = 0;
+                                            model.IlceId = 0;
+                                        }
+                                        else
+                                        {
+                                            model.IlceId = Convert.ToInt32(worksheet.Cells[row, 24].Text);
+                                        }
+                                        model.IstihkakDurumu = Convert.ToInt32(worksheet.Cells[row, 25].Text);
+                                        string dogumTarihi = worksheet.Cells[row, 26].Text;
+                                        string[] dateParts = dogumTarihi.Split('-', '.', '/');
+                                        if (dateParts.Length >= 3)
+                                        {
+                                            model.DogumTarihi = Convert.ToDateTime(worksheet.Cells[row, 26].Text);
+                                        }
+                                        else
+                                        {
+                                            model.DogumTarihi = new DateTime(1970, 1, 1);
+                                        }
+                                    }
+                                    catch
+                                    {
+                                        bilgi = $"{row}. Satýrdaki {model.Sicil} Sicilli Personle Ait Veri Hatalý.<br/> {row - 1} Satýra Kadar Güncelleme Baþarýlý,";
+                                        return bilgi;
+                                    }
+                                    _context.Personeller.Update(model);
+                                    _context.SaveChanges();
                                 }
                                 else
                                 {
-                                    model.IlceId= Convert.ToInt32(worksheet.Cells[row, 24].Text);
-                                }
-                                model.IstihkakDurumu= Convert.ToInt32(worksheet.Cells[row, 25].Text);
-                                string dogumTarihi = worksheet.Cells[row, 26].Text;
-                                string[] dateParts = dogumTarihi.Split('-', '.', '/');
-                                if (dateParts.Length >= 3)
-                                {
-                                    model.DogumTarihi = Convert.ToDateTime(worksheet.Cells[row, 26].Text);
-                                }
-                                else
-                                {
-                                    model.DogumTarihi = new DateTime(1970,1,1);
+                                    try
+                                    {
+                                        model.Id=Guid.NewGuid();
+                                        model.Sicil = worksheet.Cells[row, 2].Text;
+                                        model.Ad = worksheet.Cells[row, 3].Text;
+                                        model.Soyad= worksheet.Cells[row,4].Text;
+                                        model.Sifre = "B61FEF74D1E1C848DD109B93DAE4C9CEB7CB5E362F24CF4D1AAA50DD30D1305F";
+                                        model.RutbeId = Convert.ToInt32(worksheet.Cells[row, 6].Text);
+                                        model.BirimId = Convert.ToInt32(worksheet.Cells[row, 7].Text);
+                                        model.CinsiyetId = Convert.ToInt32(worksheet.Cells[row, 8].Text);
+                                        model.TcNo= worksheet.Cells[row, 9].Text;
+                                        model.IbanNo= worksheet.Cells[row, 10].Text;
+                                        model.KanGrubuId = Convert.ToInt32(worksheet.Cells[row, 11].Text);
+                                        model.HataliGirisSayisi = Convert.ToInt32(worksheet.Cells[row, 12].Text);
+                                        model.FotoIsim= worksheet.Cells[row, 13].Text;
+                                        model.TelsizKodu= worksheet.Cells[row, 14].Text;
+                                        model.MedeniDurumId = Convert.ToInt32(worksheet.Cells[row, 15].Text);
+                                        model.Mail = worksheet.Cells[row, 16].Text;
+                                        model.CepTelefonu = worksheet.Cells[row, 17].Text;
+                                        model.SilahMarka = worksheet.Cells[row, 18].Text;
+                                        model.SilahSeriNo = worksheet.Cells[row, 19].Text;
+                                        model.EsSicil = worksheet.Cells[row, 20].Text;
+                                        model.KayitTarihi = DateTime.Now;
+                                        model.IptalMi = false;
+                                        model.Adres = worksheet.Cells[row, 23].Text;
+                                        string excelIlce = worksheet.Cells[row, 24].Text;
+                                        if (excelIlce == null || excelIlce == "")
+                                        {
+                                            model.IlceId = 0;
+                                        }
+                                        else
+                                        {
+                                            model.IlceId = Convert.ToInt32(worksheet.Cells[row, 24].Text);
+                                        }
+                                        model.IstihkakDurumu = Convert.ToInt32(worksheet.Cells[row, 25].Text);
+                                        string dogumTarihi = worksheet.Cells[row, 26].Text;
+                                        string[] dateParts = dogumTarihi.Split('-', '.', '/');
+                                        if (dateParts.Length >= 3)
+                                        {
+                                            model.DogumTarihi = Convert.ToDateTime(worksheet.Cells[row, 26].Text);
+                                        }
+                                        else
+                                        {
+                                            model.DogumTarihi = new DateTime(1970, 1, 1);
+                                        }
+                                        ////////Personel Rolleri ekle
+
+                                    }
+                                    catch
+                                    {
+
+                                    }
                                 }
                             }
-                            catch
-                            {
-                                bilgi = $"{row}. Satýrdaki {model.Sicil} Sicilli Personle Ait Veri Hatalý.<br/> {row-1} Satýra Kadar Güncelleme Baþarýlý,";
-                                return bilgi;
-                            }
-                            _context.Personeller.Update(model);
-                            _context.SaveChanges();
                         }
 
                     }
