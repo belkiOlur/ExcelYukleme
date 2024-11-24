@@ -10,7 +10,7 @@ namespace ExcelYukleme.Service
 {
     public interface IExcelService
     {
-       Task<byte[]> IlceIdIsle(IFormFile uploadedFilee);
+       Task<byte[]> IdIsle(IFormFile uploadedFilee);
         string ExceliDatabaseIsleme(IFormFile uploadedFile);
     }
 }

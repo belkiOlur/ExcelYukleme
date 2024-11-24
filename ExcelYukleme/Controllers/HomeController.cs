@@ -18,9 +18,9 @@ namespace ExcelYukleme.Controllers
         {
             return View();
         }
-        public async Task<ActionResult> IlceIdIsleme(IFormFile uploadedFilee)
+        public async Task<ActionResult> IdIsleme(IFormFile uploadedFilee)
         {
-            var fileContent = await _excelService.IlceIdIsle(uploadedFilee);
+            var fileContent = await _excelService.IdIsle(uploadedFilee);
             var fileName = "EBSISPersonel.xlsx";
             var contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
             var cd = new System.Net.Mime.ContentDisposition

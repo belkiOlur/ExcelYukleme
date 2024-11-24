@@ -15,10 +15,16 @@ namespace ExcelYukleme.Service
             _calculate = calculate;
             _context = context;
         }
-        public async Task<byte[]> IlceIdIsle(IFormFile uploadedFilee)
+        public async Task<byte[]> IdIsle(IFormFile uploadedFilee)
         {
             string bilgi = "";
             string ilceId = "";
+            string rutbeId = "";
+            string birimId = "";
+            string cinsiyetId = "";
+            string kanGrubuId = "";
+            string medeniDurumId = "";
+            string istihkakId = "";
             int i = 0;
             List<string> satir = new();
             List<List<string>> list = new();
@@ -48,6 +54,9 @@ namespace ExcelYukleme.Service
                             }
                         }
                         var ilceler = _context.KodIlceler;
+                        var rutbeler = _context.KodRutbeler;
+                        var birimler = _context.KodBirimler;
+                        var kanGruplari = _context.KodKanGruplari;
                         satir.Add("Sıra No");
                         satir.Add("Sicil");
                         satir.Add("Ad");
@@ -84,6 +93,12 @@ namespace ExcelYukleme.Service
                                 string adres = worksheet.Cells[row, 23].Text.ToLower();
                                 List<string> adresKelimeleri = adres.Split(' ', ',', '.', '/', '-').ToList();
                                 string ilce = worksheet.Cells[row, 24].Text.ToLower();
+                                string rutbe = worksheet.Cells[row,6].Text.ToLower();
+                                string birim = worksheet.Cells[row, 7].Text.ToLower();
+                                string cinsiyet = worksheet.Cells[row, 8].Text.ToLower();
+                                string kan = worksheet.Cells[row, 11].Text.ToLower();
+                                string evlilikDurumu = worksheet.Cells[row, 15].Text.ToLower();
+                                var istihkakDurumu = worksheet.Cells[row, 25].Text.ToLower(); 
                                 if (ilce == "" || ilce == null)
                                 {
                                     if (adres != null && adres != "")
@@ -120,7 +135,138 @@ namespace ExcelYukleme.Service
                                 }
                                 if ((adres == null || adres == "") && (ilce == null || ilce == ""))
                                 {
-                                    ilceId = "";
+                                    ilceId = "0";
+                                }
+                                if (rutbe != null && rutbe != "")
+                                {
+                                    foreach (var item in rutbeler)
+                                    {
+                                        double similarity = _calculate.CalculateSimilarity(rutbe.ToLower(), item.Ad.ToLower());
+                                        if (similarity >= 0.83)
+                                        {
+                                            rutbeId = Convert.ToString(item.Id);
+                                            break;
+                                        }
+                                        if (rutbe.Contains("1.sınıf"))
+                                        {
+                                            rutbeId = "8";
+                                            break;
+                                        }
+                                        if (rutbe.Contains("2.sınıf"))
+                                        {
+                                            rutbeId = "11";
+                                            break;
+                                        }
+                                        if (rutbe.Contains("3.sınıf"))
+                                        {
+                                            rutbeId = "3";
+                                            break;
+                                        }
+                                        if (rutbe.Contains("4.sınıf"))
+                                        {
+                                            rutbeId = "12";
+                                            break;
+                                        }                                       
+                                        else
+                                        {
+                                            rutbeId = rutbe;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    rutbeId = "0";
+                                }
+                                if (birim != null && birim != "")
+                                {
+                                    foreach (var item in birimler)
+                                    {
+                                        double similarity = _calculate.CalculateSimilarity(birim.ToLower(), item.Ad.ToLower());
+                                        if (similarity >= 0.95)
+                                        {
+                                            birimId = Convert.ToString(item.Id);
+                                            break;
+                                        }                                       
+                                        else
+                                        {
+                                            birimId = birim;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    birimId = "0";
+                                }
+                                if (cinsiyet != null && cinsiyet != "")
+                                {
+                                        double similarity = _calculate.CalculateSimilarity(cinsiyet.ToLower(), "erkek");
+                                        if (similarity >= 0.6)
+                                        {
+                                            cinsiyetId = "1";
+                                        }
+                                        else
+                                        {
+                                        cinsiyetId = "2";
+                                        }                                   
+                                }
+                                else
+                                {
+                                    cinsiyetId = "0";
+                                }
+                                if (evlilikDurumu != null && evlilikDurumu != "")
+                                {
+                                    double similarity = _calculate.CalculateSimilarity(evlilikDurumu.ToLower(), "evli");
+                                    if (similarity >= 0.6)
+                                    {
+                                        medeniDurumId = "1";
+                                    }
+                                    else
+                                    {
+                                        medeniDurumId = "2";
+                                    }
+
+                                }
+                                else
+                                {
+                                   medeniDurumId = "0";
+                                }
+                                if (kan != null && kan != "")
+                                {
+                                    kan = kan.Replace(" ", "").ToLower();
+                                    foreach (var item in kanGruplari)
+                                    {
+                                        var kanGrb = item.Ad.Replace(" ", "").ToLower();
+                                        double similarity = _calculate.CalculateSimilarity(kan, kanGrb);
+                                        if (similarity >= 0.85)
+                                        {
+                                            kanGrubuId = Convert.ToString(item.Id); ;
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            kanGrubuId = kan;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    kanGrubuId = "0";
+                                }
+                                if (istihkakDurumu != null && istihkakDurumu != "")
+                                {
+                                    double similarity = _calculate.CalculateSimilarity(istihkakDurumu.ToLower(), "sivil");
+                                    if (similarity >= 0.6)
+                                    {
+                                        istihkakId = "1";
+                                    }
+                                    else
+                                    {
+                                        istihkakId = "2";
+                                    }
+                                }
+                                else
+                                {
+                                    istihkakId = "0";
                                 }
                             }
                             catch
@@ -128,15 +274,40 @@ namespace ExcelYukleme.Service
                                 bilgi += $"{row}. Satırda Hata oluştu";
                             }
 
+
                             for (int column = 1; column <= columnCount; column++)
                             {
-                                if (column == 9)
+                                if (column == 6)
+                                {
+                                    satir.Add(rutbeId);
+                                }
+                                else if (column == 7)
+                                {
+                                    satir.Add(birimId);
+                                }
+                               else if (column == 8)
+                                {
+                                    satir.Add(cinsiyetId);
+                                }
+                                else if (column == 9)
                                 {
                                     satir.Add(worksheet.Cells[row, column].Value?.ToString()!.Trim()!);
+                                }
+                                else if (column == 11)
+                                {
+                                    satir.Add(kanGrubuId);
+                                }
+                                else if (column == 15)
+                                {
+                                    satir.Add(medeniDurumId);
                                 }
                                 else if (column == 24)
                                 {
                                     satir.Add(ilceId);
+                                }
+                                else if (column == 25)
+                                {
+                                    satir.Add(istihkakId);
                                 }
                                 else if (column == 26)
                                 {

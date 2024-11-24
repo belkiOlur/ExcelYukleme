@@ -23,7 +23,7 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="ExcelIndir">Excel İndir</a>
                         </li>
                         <li class="nav-item text-dark">
-                            <a data-bs-toggle="modal" data-bs-target="#staticBackdropExcelIlceId" class="nav-link text-dark">İlçe Id Doldur</a>
+                            <a data-bs-toggle="modal" data-bs-target="#staticBackdropExcelId" class="nav-link text-dark">Id Doldur</a>
                         </li>
                         <li class="nav-item text-dark">
                             <a data-bs-toggle="modal" data-bs-target="#staticBackdropExcel" class="nav-link text-dark">Personeli Excelden Güncelle</a>
@@ -80,16 +80,16 @@
         </div>
     </div>
     @*Modal İlçe Id Doldur*@
-    <div class="modal fade" id="staticBackdropExcelIlceId" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropExcelIlceIdLabel" aria-hidden="true">
+    <div class="modal fade" id="staticBackdropExcelId" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropExcelIdLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5">Ilçe Id Düzenleme Modülü</h1>
+                    <h1 class="modal-title fs-5">Id İşleme Modülü</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div asp-validation-summary="ModelOnly"></div>
-                    <form asp-area="" asp-controller="Home" asp-action="IlceIdIsleme" method="post" enctype="multipart/form-data">
+                    <form asp-area="" asp-controller="Home" asp-action="IdIsleme" method="post" enctype="multipart/form-data">
                         <div class="mb-3">
                             <label class="col-form-label">Excel Dosya Yolu Seçiniz:</label>
                             <input type="file" class="form-control" id="uploadedFilee" name="uploadedFilee" required>
