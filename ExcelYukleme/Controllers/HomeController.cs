@@ -1,4 +1,5 @@
 using ExcelYukleme.Models;
+using FuzzySharp;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -94,6 +95,7 @@ namespace ExcelYukleme.Controllers
                             try
                             {
                                 string adres = worksheet.Cells[row, 23].Text.ToLower();
+                                List<string> adresKelimeleri = adres.Split(' ',',','.','/','-').ToList();
                                 string ilce = worksheet.Cells[row, 24].Text.ToLower();
                                 if (ilce == "" || ilce == null)
                                 {
@@ -101,13 +103,16 @@ namespace ExcelYukleme.Controllers
                                     {
                                         foreach (var item in ilceler)
                                         {
-                                            if (adres.Contains(item.IlceAdi.ToLower()))
+                                            foreach (var kelime in adresKelimeleri)
                                             {
-                                                ilceId = Convert.ToString(item.Id);
-                                                break;
+                                                double similarity = CalculateSimilarity(kelime.ToLower(), item.IlceAdi.ToLower());
+                                                if (similarity >= 0.6)
+                                                {
+                                                    ilceId = Convert.ToString(item.Id);
+                                                    break;
+                                                }
                                             }
                                         }
-
                                     }
                                 }
                                 else
@@ -288,7 +293,7 @@ namespace ExcelYukleme.Controllers
                                         else
                                         {
                                             model.DogumTarihi = new DateTime(1970, 1, 1);
-                                        }                                       
+                                        }
                                     }
                                     catch
                                     {
