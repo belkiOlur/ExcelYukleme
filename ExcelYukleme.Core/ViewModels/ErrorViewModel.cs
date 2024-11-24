@@ -1,4 +1,4 @@
-namespace ExcelYukleme.Repository.Models
+namespace ExcelYukleme.Core.ViewModels
 {
     public class ErrorViewModel
     {

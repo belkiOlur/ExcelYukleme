@@ -1,4 +1,4 @@
-using ExcelYukleme.Repository.Models;
+using ExcelYukleme.Core.ViewModels;
 using ExcelYukleme.Service;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
