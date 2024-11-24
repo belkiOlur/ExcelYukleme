@@ -37,10 +37,15 @@
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
-            <div id="fullscreenGifff" style="display: none;">
-                <img src="~/images/excelFind.gif" alt="Playing GIF">
-                <div id="loadingText2"><h1>Aylık Vardiya Sisteme İşleniyor</h1></div>
+            <div id="fullscreenGif" style="display: none;">
+                <img src="../images/excelFind.gif" alt="Playing GIFF">
+                <div id="loadingText"><h1>Personellere Ait IlceIdler Ayarlanıyor</h1></div>
             </div>
+            <div id="fullscreenGiff" style="display: none;">
+                <img src="../images/excelFind.gif" alt="Playing GIF">
+                <div id="loadingText1"><h1>Personellere Ait Bilgiler Sisteme İşleniyor</h1></div>
+            </div>
+            <iframe id="downloadFrame" style="display:none;"></iframe>
         </main>
     </div>
 
@@ -67,7 +72,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Vazgeçtim</button>
-                            <button id="playButtonnn" type="submit" class="btn btn-success d-md-block" disabled>Ekle</button>
+                            <button id="playButtonn" type="submit" class="btn btn-success d-md-block" data-bs-dismiss="modal" disabled>Ekle</button>
                         </div>
                     </form>
                 </div>
@@ -91,7 +96,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Vazgeçtim</button>
-                            <button id="playButtonnnn" type="submit" class="btn btn-success d-md-block" data-bs-dismiss="modal" disabled>Ekle</button>
+                            <button id="playButton" type="submit" class="btn btn-success d-md-block" data-bs-dismiss="modal" disabled>Ekle</button>
                         </div>
                     </form>
                 </div>
@@ -101,18 +106,13 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const playButton = document.getElementById('playButton');
-            const playButtonn = document.getElementById('playButtonn');
-            const playButtonnn = document.getElementById('playButtonnn');
-            const playButtonnn = document.getElementById('playButtonnnn');
+            const playButtonn = document.getElementById('playButtonn');           
             const fullscreenGif = document.getElementById('fullscreenGif');
-            const fullscreenGiff = document.getElementById('fullscreenGiff');
-            const fullscreenGifff = document.getElementById('fullscreenGifff');
+            const fullscreenGiff = document.getElementById('fullscreenGiff');           
             const loadingText = document.getElementById('loadingText');
-            const loadingText1 = document.getElementById('loadingText1');
-            const loadingText2 = document.getElementById('loadingText2');
+            const loadingText1 = document.getElementById('loadingText1');           
             let isVisible = true;
             let blinkInterval;
-
             playButton.addEventListener('click', function () {
                 fullscreenGif.style.display = 'flex';
 
@@ -136,45 +136,72 @@
                     }
                     isVisible = !isVisible;
                 }, 500);
-            });
-            playButtonnn.addEventListener('click', function () {
-                fullscreenGifff.style.display = 'flex';
-
-                blinkInterval = setInterval(function () {
-                    if (isVisible) {
-                        loadingText2.style.opacity = '0';
-                    } else {
-                        loadingText2.style.opacity = '1';
-                    }
-                    isVisible = !isVisible;
-                }, 500);
-            });
-            playButtonnnn.addEventListener('click', function () {
-                fullscreenGifff.style.display = 'flex';
-
-                blinkInterval = setInterval(function () {
-                    if (isVisible) {
-                        loadingText2.style.opacity = '0';
-                    } else {
-                        loadingText2.style.opacity = '1';
-                    }
-                    isVisible = !isVisible;
-                }, 500);
-            });
+            });           
         });
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const fileInput = document.getElementById('uploadedFile');
-            const submitButton = document.getElementById('playButtonnn');
+            const submitButton = document.getElementById('playButtonn');
             const fileInputt = document.getElementById('uploadedFilee');
-            const submitButtonn = document.getElementById('playButtonnnn');
+            const submitButtonn = document.getElementById('playButton');
             fileInput.addEventListener('change', function () {
                 submitButton.disabled = !fileInput.files.length;
             });
             fileInputt.addEventListener('change', function () {
                 submitButtonn.disabled = !fileInputt.files.length;
             });
+        });
+    </script>  
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const playButton = document.getElementById('playButton');
+            const fullscreenGif = document.getElementById('fullscreenGif');
+            const loadingText = document.getElementById('loadingText');
+            let isVisible = true;
+            let blinkInterval;
+
+            // Form gönderildiğinde
+            playButton.addEventListener('click', function (event) {
+                // Formun varsayılan davranışını durdur
+                event.preventDefault();
+
+                // GIF'i göster
+                fullscreenGif.style.display = 'flex';
+
+                // Yanıp sönme efekti
+                blinkInterval = setInterval(function () {
+                    loadingText.style.opacity = isVisible ? '0' : '1';
+                    isVisible = !isVisible;
+                }, 500);
+
+                // Form gönderimini başlat
+                const form = playButton.closest('form');
+                form.submit();
+
+                // İndirme işlemini kontrol et
+                checkDownloadStatus();
+            });
+
+            function checkDownloadStatus() {
+                const interval = setInterval(() => {
+                    // Çerezden indirme durumunu kontrol et
+                    const cookieValue = getCookie('DownloadToken');
+                    if (cookieValue === 'true') {
+                        // GIF'i gizle ve kontrolü durdur
+                        fullscreenGif.style.display = 'none';
+                        clearInterval(interval);
+                        clearInterval(blinkInterval);
+                    }
+                }, 1000);
+            }
+
+            function getCookie(name) {
+                const value = `; ${document.cookie}`;
+                const parts = value.split(`; ${name}=`);
+                if (parts.length === 2) return parts.pop().split(';').shift();
+                return null;
+            }
         });
     </script>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

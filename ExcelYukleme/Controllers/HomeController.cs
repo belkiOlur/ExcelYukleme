@@ -28,6 +28,7 @@ namespace ExcelYukleme.Controllers
         }
         public async Task<ActionResult> IlceIdIsleme(IFormFile uploadedFilee)
         {
+
             string bilgi = "";
             string ilceId = "";
             int i = 0;
@@ -165,12 +166,18 @@ namespace ExcelYukleme.Controllers
             var fileContent = await Indir(list);
             var fileName = "EBSISPersonel.xlsx";
             var contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
             var cd = new System.Net.Mime.ContentDisposition
             {
                 FileName = fileName,
                 Inline = false,
             };
             Response.Headers.Append("Content-Disposition", cd.ToString());
+            Response.Cookies.Append("DownloadToken", "true", new CookieOptions
+            {
+                Expires = DateTime.Now.AddMinutes(1),
+                HttpOnly = false
+            });
             return File(fileContent, contentType);
         }
         private async Task<byte[]> Indir(List<List<string>> list)
@@ -206,7 +213,6 @@ namespace ExcelYukleme.Controllers
             }
 
         }
-
         public IActionResult ExcelYukle(IFormFile uploadedFile)
         {
             string bilgi = ExceliDatabaseIsleme(uploadedFile);
@@ -282,8 +288,7 @@ namespace ExcelYukleme.Controllers
                                         else
                                         {
                                             model.DogumTarihi = new DateTime(1970, 1, 1);
-                                        }
-                                        bilgi = "Tüm Personel Barýyla Güncellendi. <br/>";
+                                        }                                       
                                     }
                                     catch
                                     {
@@ -370,7 +375,7 @@ namespace ExcelYukleme.Controllers
                     }
                 }
             }
-            bilgi += $"Tüm Personel Baþarýyla Güncellendi.";
+            bilgi += "Tüm Personel Baþarýyla Güncellendi. <br/>";
             return bilgi;
         }
         private static double CalculateSimilarity(string source, string target)
